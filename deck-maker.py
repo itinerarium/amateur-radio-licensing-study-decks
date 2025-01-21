@@ -32,11 +32,12 @@ class Question:
                 },
             ])
 
-    def __init__(self, q_id: str, regulation: str, question_text: str, choices: list[str], answer_text: str, figure: str) -> None:
+    def __init__(self, q_id: str, regulation: str, question_text: str, choices: list[str], answer_choice_letter: str, answer_text: str, figure: str) -> None:
         self.q_id = q_id
         self.regulation = regulation
         self.question_text = question_text
         self.choices = choices
+        self.answer_choice_letter = answer_choice_letter
         self.answer_text = answer_text
         self.figure = figure
 
@@ -57,9 +58,7 @@ class Question:
         while j < len(self.choices):
             he_choice = html.escape(self.choices[j])
             choices += f"<p>{he_choice}</p>"
-            # assumes answer choices are sufficiently distinct
-            # can also check number of mismatched characters to allow for formatting inconsistencies
-            if self.choices[j].endswith(self.answer_text):
+            if self.choices[j].startswith(self.answer_choice_letter):
                 he_choice = f"<b>{he_choice}</b>"
             else:
                 he_choice = f"""<span style="opacity: 30%;">{he_choice}</span>"""
@@ -97,7 +96,6 @@ class AnkiDeckMaker:
         if len(ref_line) > 2:
             q_regulation = ' '.join(ref_line[2:])
             q_regulation = q_regulation[1:-1]
-            print(q_regulation)
 
         q_id = ref_line[0]
 
@@ -115,6 +113,7 @@ class AnkiDeckMaker:
                 q_regulation,
                 question,
                 choices,
+                q_answer_letter,
                 q_answer_text,
                 q_figure)
         return question_entry
